@@ -1,0 +1,94 @@
+﻿<br />
+<br />
+<br />
+<form class="form-inline">
+
+    <div class="form-group mx-sm-3 mb-2">
+        <label>שם הלקוח</label>
+        <input type="text" class="form-control" required id="inputName" placeholder="">
+    </div>
+    <button type="submit" id="addCustomer" class="btn btn-primary mb-2">הכנס תור</button>
+</form>
+<hr />
+<button type="button" id="nextCustomer" class="btn btn-primary mb-2">התור הבא</button>
+
+<hr />
+<div class="form-group mx-sm-3 mb-2">
+    <h2>בטיפול</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="row">מספר</th>
+                <th scope="row">שם</th>
+                <th scope="row">שעה</th>
+            </tr>
+        </thead>
+        <tbody id="customerBetipul">
+        </tbody>
+
+    </table>
+
+</div>
+<hr />
+<h2> רשימת ממתינים</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">מספר</th>
+            <th scope="col">שם</th>
+            <th scope="col">שעה</th>
+        </tr>
+    </thead>
+    <tbody id="tbodyCustomers">
+    </tbody>
+</table>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(function () {
+        'use strict'
+        getAlWating();
+        //button
+        $("#addCustomer").click(function () {
+            event.preventDefault();
+            var name = $("#inputName").val();
+            if (!name) {
+                alert("יש להקליד שם");
+                return;
+            }
+            $.post('https://localhost:44351/api/Customer/CreateNewCustomer?name=' + name+'')
+                .then(data => {
+                    getAlWating();
+                });
+        });
+        $("#nextCustomer").click(function () {
+            event.preventDefault();
+            $.post("https://localhost:44351/api/Customer/UpdateCustomer")
+                .done(function (data) {
+                    if (data) {
+                        $("#customerBetipul").empty();
+                        $("#customerBetipul").append("<tr><td>" + data[0].Id + "</td><td>" + data[0].Name + "</td><td>" + data[0].Time.slice(0, 5)+"</td></tr>")
+                        getAlWating();
+
+                    }
+                });
+        });
+        //function
+        function getAlWating()
+        {
+            $("#tbodyCustomers").empty();
+            $.get("https://localhost:44351/api/Customer/GetCustomersWaiting")
+                .done(function (data) {
+
+                    for (let i = 0; i < data.length; i++) {
+                        var time1 = data[i].Time.slice(0,5);
+                        $("#tbodyCustomers").append("<tr><td>" + data[i].Id + "</td><td>" + data[i].Name + "</td><td>" + time1 + "</td></tr>");
+                    }
+                });
+
+
+        }
+    });
+</script>
