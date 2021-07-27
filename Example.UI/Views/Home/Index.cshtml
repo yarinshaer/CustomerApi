@@ -2,7 +2,7 @@
 <br />
 <br />
 <form class="form-inline">
-
+    @Html.AntiForgeryToken()
     <div class="form-group mx-sm-3 mb-2">
         <label>שם הלקוח</label>
         <input type="text" class="form-control" required id="inputName" placeholder="">
@@ -49,7 +49,7 @@
 <script>
     $(function () {
         'use strict'
-        getAlWating();
+        getAllWating();
         //button
         $("#addCustomer").click(function () {
             event.preventDefault();
@@ -58,9 +58,10 @@
                 alert("יש להקליד שם");
                 return;
             }
+         
             $.post('https://localhost:44351/api/Customer/CreateNewCustomer?name=' + name+'')
                 .then(data => {
-                    getAlWating();
+                    getAllWating();
                 });
         });
         $("#nextCustomer").click(function () {
@@ -70,13 +71,14 @@
                     if (data) {
                         $("#customerBetipul").empty();
                         $("#customerBetipul").append("<tr><td>" + data[0].Id + "</td><td>" + data[0].Name + "</td><td>" + data[0].Time.slice(0, 5)+"</td></tr>")
-                        getAlWating();
+                        getAllWating();
 
                     }
                 });
         });
+
         //function
-        function getAlWating()
+        function getAllWating()
         {
             $("#tbodyCustomers").empty();
             $.get("https://localhost:44351/api/Customer/GetCustomersWaiting")
